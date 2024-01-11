@@ -33,7 +33,7 @@ jobs:
 
       - name: Check for new release in external repo
         id: check_release
-        uses: actions/github-script@v20
+        uses: actions/github-script@v7
         with:
           script: |
             const repo_owner = 'ankitects';
