@@ -36,8 +36,8 @@ jobs:
         uses: actions/github-script@v5
         with:
           script: |
-            const repo_owner = 'external-repo-owner';
-            const repo_name = 'external-repo-name';
+            const repo_owner = 'ankitects';
+            const repo_name = 'anki';
             const result = await github.repos.listReleases({
               owner: repo_owner,
               repo: repo_name,
