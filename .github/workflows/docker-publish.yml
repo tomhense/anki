@@ -6,6 +6,7 @@ name: Docker Image Publish
 # documentation.
 
 on:
+  workflow_dispatch:
   repository_dispatch:
     types: [new-release-event]
 
