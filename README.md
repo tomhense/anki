@@ -9,7 +9,7 @@ version: "3"
 
 services:
   anki:
-	image: ghcr.io/tomhense/anki-docker-build
+	image: ghcr.io/tomhense/anki
     container_name: anki
     restart: unless-stopped
     ports:
