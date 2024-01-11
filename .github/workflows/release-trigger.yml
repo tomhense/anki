@@ -1,0 +1,72 @@
+name: Check for New Releases
+
+on:
+  schedule:
+    # Runs at 00:00 UTC every day
+    - cron: "0 0 * * *"
+
+jobs:
+  check-new-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+
+      - name: Download previous artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: last-release-date
+          path: previous_release
+        # Continue if the artifact does not exist
+        continue-on-error: true
+
+      - name: Read stored release date (if exists)
+        id: read_stored_date
+        run: |
+          if [ -f previous_release/release_date.txt ]; then
+            echo "Stored release date found"
+            echo "RELEASE_DATE=$(<previous_release/release_date.txt)" >> $GITHUB_ENV
+          else
+            echo "RELEASE_DATE=" >> $GITHUB_ENV
+          fi
+
+      - name: Check for new release in external repo
+        id: check_release
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const repo_owner = 'external-repo-owner';
+            const repo_name = 'external-repo-name';
+            const result = await github.repos.listReleases({
+              owner: repo_owner,
+              repo: repo_name,
+            });
+            const latestRelease = result.data[0]; // Assuming the first one is the latest
+            const latestReleaseDate = new Date(latestRelease.created_at).toISOString();
+
+            if (latestReleaseDate !== process.env.RELEASE_DATE) {
+              core.setOutput('new_release', latestReleaseDate);
+            }
+
+      # If the current stored release date does not match the fetched one, consider it a new release
+      - name: Create artifact with new release date
+        if: steps.check_release.outputs.new_release
+        run: echo "${{ steps.check_release.outputs.new_release }}" > release_date.txt
+
+      - name: Upload the new release date as an artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: last-release-date
+          path: release_date.txt
+
+      - name: Dispatch repository event
+        if: steps.check_release.outputs.new_release
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.repos.createDispatchEvent({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                event_type: 'new-release-event'
+            });
