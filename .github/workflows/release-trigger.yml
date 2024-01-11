@@ -17,7 +17,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: last-release-date
-          path: previous_release
+          path: release_date.txt
         # Continue if the artifact does not exist
         continue-on-error: true
 
@@ -60,7 +60,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: last-release-date
-          path: previous_release
+          path: release_date.txt
 
       - name: Dispatch repository event
         if: steps.check_release.outputs.new_release
