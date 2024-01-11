@@ -17,16 +17,16 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: last-release-date
-          path: release_date.txt
+          path: previous-release
         # Continue if the artifact does not exist
         continue-on-error: true
 
       - name: Read stored release date (if exists)
         id: read_stored_date
         run: |
-          if [ -f last-release-date/release_date.txt ]; then
+          if [ -f previous_release ]; then
             echo "Stored release date found"
-            echo "RELEASE_DATE=$(cat last-release-date/release_date.txt)" >> $GITHUB_ENV
+            echo "RELEASE_DATE=$(cat previous_release)" >> $GITHUB_ENV
           else
             echo "RELEASE_DATE=" >> $GITHUB_ENV
           fi
