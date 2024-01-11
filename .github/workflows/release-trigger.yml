@@ -38,7 +38,7 @@ jobs:
           script: |
             const repo_owner = 'ankitects';
             const repo_name = 'anki';
-            const result = await github.repos.listReleases({
+            const result = await github.rest.repos.listReleases({
               owner: repo_owner,
               repo: repo_name,
             });
