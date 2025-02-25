@@ -1,4 +1,4 @@
-FROM python:latest
+FROM docker.io/python:latest
 
 # Define host and port
 ENV SYNC_HOST=0.0.0.0
@@ -11,8 +11,7 @@ ENV SYNC_BASE=/data
 ENV MAX_SYNC_PAYLOAD_MEGS=100
 
 # Install anki and create user
-RUN pip install anki && useradd -M anki && mkdir /data && chown -R anki /data
-USER anki
+RUN pip install anki && mkdir /data
 
 # Declare the data volume
 VOLUME /data
